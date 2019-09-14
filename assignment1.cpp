@@ -6,8 +6,9 @@
 #include <time.h>
 #include <cmath>
 
-
 using namespace std;
+
+// setting global variables
 
 ifstream dnaFile;
 string filename;
@@ -30,45 +31,57 @@ int mean = 0;
 float variance = 0;
 float sd = 0;
 
-float a = 0, b = 0,  c = 0, d = 0;
+float a = 0, b = 0, c = 0, d = 0;
 int aGuas = 0, tGuas = 0, gGuas = 0, cGuas = 0;
 
 ofstream outfile;
 
+//initializing methods
 void determineBigram(string dnaLine);
 void generateStrings();
 void reset();
 
 int main(int argc, char **argv)
 {
+    // opens outfile
     outfile.open("arshia.txt");
+    //writes header onto outfile
     outfile << "Arshia Behzad \n";
     outfile << "ID: 23204643\n\n";
     outfile << "________________________________________________________________________ \n";
 
-    while (true){
+    //this while loop will run until the user says they want to quit
+    while (true)
+    {
 
+        // asks the user for the name of the file and opens it
         cout << "Enter the name of the file: ";
         cin >> filename;
         dnaFile.open(filename);
         cout << "Running analysis... \n";
 
+        // this while loop goes through the file line by line
         while (getline(dnaFile, line))
         {
-            //cout << "works";
+            //calls the determine bigram function
             determineBigram(line);
 
+            // if the line length is greater than zero it adds to the sum of the number of lines
             if (line.length() > 0)
                 sum++;
 
+            // this loop runs through the individual nucleotides on the current line
             for (int i = 0; i < line.length(); i++)
             {
+                //checks if the nucleotide is a proper entry and if so adds to the nucleotide sum
                 if (line[i] == 'A' || line[i] == 'a' || line[i] == 'T' || line[i] == 't' || line[i] == 'G' || line[i] == 'g' || line[i] == 'C' || line[i] == 'c')
                 {
 
                     nSum++;
                 }
 
+                /*  set of if statements that check to see what nucleotide the entry is and adds 
+                    to the variable keeping track of the number of that nucleotide            */
                 if (line[i] == 'A' || line[i] == 'a')
                 {
                     A++;
@@ -87,26 +100,44 @@ int main(int argc, char **argv)
                 }
             }
         }
+        //closes the DNA file
         dnaFile.close();
 
-        mean = nSum/sum;
+        mean = nSum / sum;
 
+        //reopens the DNA file
         dnaFile.open(filename);
-        while(getline(dnaFile, line))
+
+        /* goes through the file line by line a again this time to calculate variance 
+            Note: This couldn't be done in the first while loop because the mean is necessary
+            to calcuate the variance, and the mean is only calculated by the end of the previous
+            while loop */
+        while (getline(dnaFile, line))
         {
-        
-            if(line.length() >0 ){
+            // ensures the line length is greater than one
+            if (line.length() > 0)
+            {
+                /*calculates the squared differences and adds them together to later 
+                 be used in calculating the variance.
+                 Note: without casting the 'line.length()' to an int the code would output
+                 weird numbers for the differences. I do not know why. I was messing with it
+                 to try and fix it and I simply tried casting it as an int and it just worked.*/
                 squaredDifferences += pow((int)line.length() - mean, 2);
             }
-        } 
-        variance = squaredDifferences/(sum-1);
+        }
+
+        // calculates variance and standard deviation and store them
+        variance = squaredDifferences / (sum - 1);
         sd = sqrt(variance);
 
+        //calculates the probabilty of each nucleotide
         probA = (float(A) / float(nSum));
         probT = (float(T) / float(nSum));
         probG = (float(G) / float(nSum));
         probC = (float(C) / float(nSum));
 
+        /*  This sequence of code writes to the outfile all the statistics calculated and formats
+            them in a user-freindly fashion. */
         outfile << "ANALYSIS OF " << filename << ":\n\n";
 
         outfile << "The nucleotide sum is : " << nSum << "\n";
@@ -114,11 +145,11 @@ int main(int argc, char **argv)
         outfile << "The number of DNA strings is : " << sum << "\n";
         outfile << "The Variance is : " << variance << "\n";
         outfile << "The Standard Deviation is : " << sd << "\n\n";
-        
+
         outfile << "Number of As : " << A << "\n";
-        outfile << "Number of Ts : " << T<< "\n";
+        outfile << "Number of Ts : " << T << "\n";
         outfile << "Number of Gs : " << G << "\n";
-        outfile << "Number of Cs : " << C<< "\n\n";
+        outfile << "Number of Cs : " << C << "\n\n";
         outfile << "Probability of As : " << 100 * probA << "%\n";
         outfile << "Probability of Ts : " << 100 * probT << "%\n";
         outfile << "Probability of Gs : " << 100 * probG << "%\n";
@@ -141,7 +172,7 @@ int main(int argc, char **argv)
         outfile << "Number of CGs : " << CG << "\n";
         outfile << "Number of CCs : " << CC << "\n\n";
 
-        outfile << "Probability of AAs : " << 100 * (float(AA) / float(totalBigrams)) <<"%\n ";
+        outfile << "Probability of AAs : " << 100 * (float(AA) / float(totalBigrams)) << "%\n ";
         outfile << "Probability of ATs : " << 100 * (float(AT) / float(totalBigrams)) << "%\n ";
         outfile << "Probability of AGs : " << 100 * (float(AG) / float(totalBigrams)) << "%\n ";
         outfile << "Probability of ACs : " << 100 * (float(AC) / float(totalBigrams)) << "%\n ";
@@ -158,28 +189,40 @@ int main(int argc, char **argv)
         outfile << "Probability of CGs : " << 100 * (float(CG) / float(totalBigrams)) << "%\n ";
         outfile << "Probability of CCs : " << 100 * (float(CC) / float(totalBigrams)) << "%\n\n ";
 
-        outfile << "1000 generated sequences based of the Gausian distribution of your file:" << "\n";
+        outfile << "1000 generated sequences based of the Gausian distribution of your file:"
+                << "\n";
+        // calls the generateStrings method which will generate 1000 DNA sequences
         generateStrings();
 
+        //closes the DNA file
         dnaFile.close();
 
+        //asks if user would want to add another file
         cout << "Analysis complete! \n";
         cout << "Would you like to process another file? y or n? \n";
         string response = "";
         cin >> response;
-        if (response == "y"){
+        // calls reset method to reset variables
+        if (response == "y")
+        {
             reset();
+            //formating stuff
             outfile << "\n________________________________________________________________________";
             outfile << "\n";
         }
-        else {
+        else
+        {
+            //breaks loop if user doesn't decide to add another list 
             break;
         }
     }
+    // closes outfile 
     outfile.close();
 }
 
-void reset(){
+// resets variables so that another file can be run again
+void reset()
+{
     A = 0, C = 0, T = 0, G = 0;
     AA = 0, AC = 0, AT = 0, AG = 0;
     CA = 0, CC = 0, CT = 0, CG = 0;
@@ -200,24 +243,30 @@ void reset(){
     nSum = 0;
 
     aGuas = 0, tGuas = 0, gGuas = 0, cGuas = 0;
-    
 }
 
-void generateStrings() {
-    for (int i =0; i < 15; i++){
-        a = (float) rand()/ (float)RAND_MAX;
+/*This method calculates the gautian distribution and then for each nucleotide determines how many
+each sequence will have of each nucleotide. It then writes these sequences to the file*/
+void generateStrings()
+{
+    // repeats the process so that 1000 sequences are created
+    for (int i = 0; i < 1000; i++)
+    {
+        //creates random floats a and b 
+        a = (float)rand() / (float)RAND_MAX;
         b = (float)rand() / (float)RAND_MAX;
-        c = sqrt(-2 * log(a))*cos(2 * M_PI * b );
-        d = (sd*c) + mean; 
+        // calculates gautian distribution using formulas
+        c = sqrt(-2 * log(a)) * cos(2 * M_PI * b);
+        d = (sd * c) + mean;
 
-        aGuas = probA*d;
-        tGuas = probT*d;
-        gGuas = probG*d;
-        cGuas = probC*d;
+        //determines how many of each nucleotide is needed for the string
+        aGuas = probA * d;
+        tGuas = probT * d;
+        gGuas = probG * d;
+        cGuas = probC * d;
 
-        //cout << d << "\n";
-
-        for(int i=0; i< aGuas; i++)
+        //writes the correct number of the specific nucleotide needed 
+        for (int i = 0; i < aGuas; i++)
         {
             outfile << "A";
         }
@@ -233,16 +282,25 @@ void generateStrings() {
         {
             outfile << "C";
         }
-        outfile <<"\n";
+        outfile << "\n";
     }
 }
 
+/*Loops through a line and determines what bigrams are present within the line. Adds them to the 
+counters keeping track of them
+@param takes in a string (a sequence of DNA)*/
 void determineBigram(string dnaLine)
 {
-    for (int i = 0; i < dnaLine.length(); i++){
+    //loops through each nucleotide in the DNA line 
+    for (int i = 0; i < dnaLine.length(); i++)
+    {
+        //lowers the case of the nucleotide it is on, and the next one in the sequence
         char first = tolower(dnaLine[i]);
-        char second = tolower( dnaLine[i+1]);
+        char second = tolower(dnaLine[i + 1]);
+        //combines these two chars into a string (had to cast as a string using the string class)
         string bigram = string(1, first) + string(1, second);
+        /*series of if statements that determine which bigram is present and adds to the total
+        of that particular bigram*/
         if (bigram == "aa")
             AA++;
         else if (bigram == "at")
@@ -275,15 +333,15 @@ void determineBigram(string dnaLine)
             CC++;
         else if (bigram == "cg")
             CG++;
-        else 
-            continue; 
+        else
+            continue;
 
-        totalBigrams++;   
+        //counter that keeps track of the total bigrams present
+        totalBigrams++;
 
+        /*lets the for loop move by twos as long as there is enough elements left in the 
+        string to do so*/
         if (i < dnaLine.length())
             i++;
-        
     }
 }
-  
-
