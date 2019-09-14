@@ -1,3 +1,10 @@
+//Arshia Behzad
+//2320643
+//behzad@chapman.edu
+//CPSC 350 Section 1
+//Assignment 1
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -5,6 +12,7 @@
 #include <math.h>
 #include <time.h>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -13,7 +21,10 @@ using namespace std;
 ifstream dnaFile;
 string filename;
 string line;
+
+//sum keeps track of the number of DNA sequences in the file 
 int sum = 0;
+//nSum keeps track of the number of nucleotides in the file
 int nSum = 0;
 
 int A = 0, C = 0, T = 0, G = 0;
@@ -55,7 +66,7 @@ int main(int argc, char **argv)
     {
 
         // asks the user for the name of the file and opens it
-        cout << "Enter the name of the file: ";
+        cout << "Enter the name of the file you want to analyze: ";
         cin >> filename;
         dnaFile.open(filename);
         cout << "Running analysis... \n";
@@ -100,6 +111,18 @@ int main(int argc, char **argv)
                 }
             }
         }
+
+        /*Invalid entry error checking. If file is empty it will ask for a new file
+        If file is 1 it will warn about possible incorrect data since there is no variabce*/
+        if (sum == 0){
+            cout << "Empty file! please give a different file name \n";
+            continue; 
+        }
+        else if (sum == 1)
+        {
+            cout << "WARNING: Your file has one string. There is no variance. \n";
+            cout << "Statistics could be affected \n";
+        }
         //closes the DNA file
         dnaFile.close();
 
@@ -127,7 +150,11 @@ int main(int argc, char **argv)
         }
 
         // calculates variance and standard deviation and store them
-        variance = squaredDifferences / (sum - 1);
+        // if there is only one line in the file, it will set the variance to 0
+        if (sum != 1)
+            variance = squaredDifferences / (sum - 1);
+        else
+            variance = 0;
         sd = sqrt(variance);
 
         //calculates the probabilty of each nucleotide
@@ -265,26 +292,33 @@ void generateStrings()
         gGuas = probG * d;
         cGuas = probC * d;
 
+        string sequence = ""; 
         //writes the correct number of the specific nucleotide needed 
         for (int i = 0; i < aGuas; i++)
         {
-            outfile << "A";
+            sequence += "A";
         }
         for (int i = 0; i < tGuas; i++)
         {
-            outfile << "T";
+            sequence +=  "T";
         }
         for (int i = 0; i < gGuas; i++)
         {
-            outfile << "G";
+            sequence += "G";
         }
         for (int i = 0; i < cGuas; i++)
         {
-            outfile << "C";
+            sequence += "C";
         }
+        /*shuffles the sequence so it looks more realistic. I found this on stackoverflow
+        see README.md for link*/
+        random_shuffle(sequence.begin(), sequence.end());
+        outfile << sequence; 
         outfile << "\n";
     }
 }
+
+
 
 /*Loops through a line and determines what bigrams are present within the line. Adds them to the 
 counters keeping track of them

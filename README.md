@@ -10,3 +10,4 @@ Sources:
 Stephen White helped me a bit with the general overview of how he counted the bigrams
 Brinly Xavier helped me a bit with understanding the general concept of the Gautian Distribution and
 how to use it to generate the strings. 
+To shuffle the DNA sequences I used a line of code i found on stack overflow: https://stackoverflow.com/questions/8364597/shuffling-string
