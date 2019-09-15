@@ -55,7 +55,7 @@ void reset();
 int main(int argc, char **argv)
 {
     // opens outfile
-    outfile.open("arshia.txt");
+    outfile.open("arshia.out");
     //writes header onto outfile
     outfile << "Arshia Behzad \n";
     outfile << "ID: 23204643\n\n";
@@ -165,6 +165,7 @@ int main(int argc, char **argv)
 
         /*  This sequence of code writes to the outfile all the statistics calculated and formats
             them in a user-freindly fashion. */
+         
         outfile << "ANALYSIS OF " << filename << ":\n\n";
 
         outfile << "The nucleotide sum is : " << nSum << "\n";
@@ -218,6 +219,7 @@ int main(int argc, char **argv)
 
         outfile << "1000 generated sequences based of the Gausian distribution of your file:"
                 << "\n";
+        cout <<"WORK ";
         // calls the generateStrings method which will generate 1000 DNA sequences
         generateStrings();
 
