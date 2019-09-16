@@ -219,7 +219,7 @@ int main(int argc, char **argv)
 
         outfile << "1000 generated sequences based of the Gausian distribution of your file:"
                 << "\n";
-        cout <<"WORK ";
+        //cout <<"WORK ";
         // calls the generateStrings method which will generate 1000 DNA sequences
         generateStrings();
 
